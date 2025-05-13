@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realtime Bot</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div
+      class="bg-white shadow-2xl rounded-2xl w-full max-w-2xl flex flex-col h-screen overflow-hidden"
+    >
+      <!-- Chat Header -->
+      <div class="bg-blue-600 text-white p-4 text-center text-lg font-semibold">
+        Talk to Dom 🚗💬
+      </div>
+
+      <!-- Chat Messages -->
+      <div
+        id="chatbox"
+        class="flex-1 overflow-y-auto p-4 space-y-2 bg-blue-50"
+      ></div>
+
+      <!-- Chat Input -->
+      <div class="p-4 border-t bg-white">
+        <input
+          class="w-full p-2 mb-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+          id="messageInput"
+          type="text"
+          placeholder="Type your message"
+        />
+        <div class="flex justify-between gap-2">
+          <button
+            class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded shadow"
+            id="clearButton"
+          >
+            Clear Chat
+          </button>
+          <button
+            class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+            id="sendButton"
+          >
+            Ask Dom!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const chatbox = document.getElementById("chatbox");
+      const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
+      const clearButton = document.getElementById("clearButton");
+      const chatId = crypto.randomUUID();
+      let websocket = null;
+      let receiving = false;
+
+      const systemPrompt =
+        "You are AI Chatot, a street racer and skilled mechanic known for your loyalty to family and friends.";
+
+      function createMessageElement(text, alignment) {
+        const messageElement = document.createElement("div");
+        messageElement.className = `inline-block max-w-[70%] p-3 rounded-lg text-sm ${
+          alignment === "left"
+            ? "self-start bg-white shadow"
+            : "self-end bg-blue-200 text-right shadow"
+        }`;
+        messageElement.textContent = text;
+        return messageElement;
+      }
+
+      function connectWebSocket(message, initChat) {
+        receiving = true;
+        sendButton.textContent = "Cancel";
+        const url = "wss://backend.buildpicoapps.com/api/chatbot/chat";
+        websocket = new WebSocket(url);
+
+        websocket.addEventListener("open", () => {
+          websocket.send(
+            JSON.stringify({
+              chatId: chatId,
+              appId: "ahead-less",
+              systemPrompt: systemPrompt,
+              message: initChat
+                ? "A very short welcome message from Dominic Toretto"
+                : message,
+            })
+          );
+        });
+
+        const messageElement = createMessageElement("", "left");
+        chatbox.appendChild(messageElement);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        websocket.onmessage = (event) => {
+          messageElement.textContent += event.data;
+          chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        websocket.onclose = (event) => {
+          if (event.code === 1000) {
+            receiving = false;
+            sendButton.textContent = "Ask Dom!";
+          } else {
+            messageElement.textContent +=
+              "Error getting response from server. Refresh the page and try again.";
+            chatbox.scrollTop = chatbox.scrollHeight;
+            receiving = false;
+            sendButton.textContent = "Ask Dom!";
+          }
+        };
+      }
+
+      function createWelcomeMessage() {
+        connectWebSocket("", true);
+      }
+
+      sendButton.addEventListener("click", () => {
+        if (!receiving && messageInput.value.trim() !== "") {
+          const messageText = messageInput.value.trim();
+          messageInput.value = "";
+          const messageElement = createMessageElement(messageText, "right");
+          chatbox.appendChild(messageElement);
+          chatbox.scrollTop = chatbox.scrollHeight;
+
+          connectWebSocket(messageText, false);
+        } else if (receiving && websocket) {
+          websocket.close(1000);
+          receiving = false;
+          sendButton.textContent = "Ask Dom!";
+        }
+      });
+
+      messageInput.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          !receiving &&
+          messageInput.value.trim() !== ""
+        ) {
+          event.preventDefault();
+          sendButton.click();
+        }
+      });
+
+      clearButton.addEventListener("click", () => {
+        chatbox.innerHTML = "";
+      });
+
+      createWelcomeMessage();
+    </script>
+  </body>
+</html>
