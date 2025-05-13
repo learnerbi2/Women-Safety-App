@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:womensafteyhackfair/Dashboard/Dashboard.dart';
+import 'package:womensafteyhackfair/Login%20and%20Registration/RegistrationForm.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -20,7 +21,8 @@ class _SplashState extends State<Splash> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Dashboard(),
+          builder: (context) =>RegistrationForm()
+          //  Dashboard(),
         ),
       );
     });

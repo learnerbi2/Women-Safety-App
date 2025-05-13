@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:womensafteyhackfair/Dashboard/Dashboard.dart';
 import 'package:womensafteyhackfair/Dashboard/Splsah/Splash.dart';
+import 'package:womensafteyhackfair/Login%20and%20Registration/RegistrationForm.dart';
 import 'package:womensafteyhackfair/background_services.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
           builder: (context, AsyncSnapshot<bool> snap) {
             if (snap.hasData) {
               if (snap.data!=null) {
-                return Dashboard();
+                return RegistrationForm();
+                // Dashboard();
               } else {
                 return Splash();
               }

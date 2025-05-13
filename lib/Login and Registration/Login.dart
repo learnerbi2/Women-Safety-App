@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:shesecure/RegistrationForm.dart';
+import 'package:womensafteyhackfair/Dashboard/Dashboard.dart';
+import 'package:womensafteyhackfair/Dashboard/Home.dart';
+import 'package:womensafteyhackfair/Login%20and%20Registration/RegistrationForm.dart';
+// import 'package:shesecure/RegistrationForm.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -143,7 +146,7 @@ class _LoginPageState extends State<Login> {
                           backgroundColor: WidgetStatePropertyAll(Colors.purple),
                         ),
                         onPressed: () {
-                          Navigator.push(context,MaterialPageRoute(builder: (context)=>RegistrationForm()));
+                          Navigator.push(context,MaterialPageRoute(builder: (context)=>Home()));
                           // // Implement login logic here
                           if (_formKey.currentState!.validate()) {
                             /* ScaffoldMessenger.of(context).showSnackBar(
@@ -151,7 +154,9 @@ class _LoginPageState extends State<Login> {
                             );*/
                             print('Email: ${_emailController.text}');
                             print('Password: ${_passwordController.text}');
-                            Navigator.push(context,MaterialPageRoute(builder: (context)=> RegistrationForm()));
+                            Navigator.push(context,MaterialPageRoute(builder: (context)=> Home()
+                            // Dashboard()
+                            ));
                           }
                         },
                         child: const Text(

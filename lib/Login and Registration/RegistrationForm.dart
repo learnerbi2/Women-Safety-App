@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shesecure/TextInputField.dart';
-import 'package:shesecure/bottomnavigation/bottompage.dart';
+import 'package:womensafteyhackfair/Dashboard/Home.dart';
+import 'package:womensafteyhackfair/Login%20and%20Registration/Login.dart';
 
 const primaryColor = Colors.black;
 
@@ -206,7 +206,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed:(){
-                                      Navigator.push(context, MaterialPageRoute(builder:(context)=>MyHomePage()));
+                                      Navigator.push(context, MaterialPageRoute(builder:(context)=>Login()));
                                     },
                                     child: const Text('Submit', style: TextStyle(color: Colors.white, fontSize: 16)),
                                   ),
