@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -10,16 +10,19 @@ import 'package:womensafteyhackfair/Dashboard/Splsah/Splash.dart';
 import 'package:womensafteyhackfair/background_services.dart';
 import 'package:workmanager/workmanager.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterBackgroundService.initialize(onStart);
+
+if (!kIsWeb) {
+  await FlutterBackgroundService().startService( // Note the () to create an instance
+    // serviceInitializer: onStart,
+    // isInForeground: true,
+  );
   Workmanager().initialize(
     callbackDispatcher,
     isInDebugMode: false,
   );
-  
+}
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(MyApp());
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Amaan',
+      title: 'She-Secure',
       theme: ThemeData(
         fontFamily: GoogleFonts.poppins().fontFamily,
         primarySwatch: Colors.blue,
@@ -42,14 +45,14 @@ class MyApp extends StatelessWidget {
           future: isAppOpeningForFirstTime(),
           builder: (context, AsyncSnapshot<bool> snap) {
             if (snap.hasData) {
-              if (snap.data) {
+              if (snap.data!=null) {
                 return Dashboard();
               } else {
                 return Splash();
               }
             } else {
               return Container(
-                color: Colors.white,
+                color: const Color.fromARGB(255, 192, 105, 213),
               );
             }
           }),

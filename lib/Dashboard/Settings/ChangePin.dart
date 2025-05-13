@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pinput/pin_put/pin_put.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pinput/pinput.dart';
 
 class ChangePinScreen extends StatefulWidget {
   final int pin;
-  const ChangePinScreen({Key key, this.pin}) : super(key: key);
+  const ChangePinScreen({Key? key, required this.pin}) : super(key: key);
 
   @override
   _ChangePinScreenState createState() => _ChangePinScreenState();
@@ -18,12 +19,6 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
   final FocusNode _pinPutFocusNode2 = FocusNode();
   String currentPin = "";
   bool pinChanged = false;
-  BoxDecoration get _pinPutDecoration {
-    return BoxDecoration(
-      border: Border.all(color: Colors.deepPurpleAccent),
-      borderRadius: BorderRadius.circular(15.0),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,28 +74,25 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20.0),
                   padding: const EdgeInsets.all(20.0),
-                  child: PinPut(
-                    onSaved: (value) {
-                      print(value);
-                    },
-                    fieldsCount: 4,
-                    onSubmit: (String pin) {
-                      currentPin = pin;
-                      _pinPutFocusNode1.unfocus();
-                    },
-                    focusNode: _pinPutFocusNode1,
-                    controller: _pinPutController1,
-                    submittedFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    selectedFieldDecoration: _pinPutDecoration,
-                    followingFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(5.0),
-                      border: Border.all(
-                        color: Colors.deepPurpleAccent.withOpacity(.5),
-                      ),
-                    ),
-                  ),
+                  child: Pinput(
+  length: 4,
+  controller: _pinPutController1,
+  focusNode: _pinPutFocusNode1,
+  onCompleted: (pin) {
+    currentPin = pin;
+    _pinPutFocusNode1.unfocus();
+  },
+  defaultPinTheme: PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: TextStyle(fontSize: 20, color: Colors.black),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.deepPurpleAccent),
+      borderRadius: BorderRadius.circular(15),
+    ),
+  ),
+),
+
                 ),
               ],
             ),
@@ -121,25 +113,25 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20.0),
             padding: const EdgeInsets.all(20.0),
-            child: PinPut(
-              onSaved: (value) {
-                print(value);
-              },
-              fieldsCount: 4,
-              onSubmit: (String pin) => _showSnackBar(pin, context),
-              focusNode: _pinPutFocusNode2,
-              controller: _pinPutController2,
-              submittedFieldDecoration: _pinPutDecoration.copyWith(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              selectedFieldDecoration: _pinPutDecoration,
-              followingFieldDecoration: _pinPutDecoration.copyWith(
-                borderRadius: BorderRadius.circular(5.0),
-                border: Border.all(
-                  color: Colors.deepPurpleAccent.withOpacity(.5),
-                ),
-              ),
-            ),
+            child:Pinput(
+  length: 4,
+  controller: _pinPutController1,
+  focusNode: _pinPutFocusNode1,
+  onCompleted: (pin) {
+    currentPin = pin;
+    _pinPutFocusNode1.unfocus();
+  },
+  defaultPinTheme: PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: TextStyle(fontSize: 20, color: Colors.black),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.deepPurpleAccent),
+      borderRadius: BorderRadius.circular(15),
+    ),
+  ),
+),
+
           ),
           SizedBox(height: 100),
           Visibility(
@@ -179,37 +171,6 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
     );
   }
 
-  void _showSnackBar(String pin, BuildContext context) {
-    if (widget.pin != -1111) {
-      if (currentPin.isEmpty || currentPin.length != 4) {
-        Fluttertoast.showToast(msg: 'Please enter Current PIN');
-        _pinPutFocusNode2.unfocus();
-        return;
-      }
-      if (currentPin != widget.pin.toString()) {
-        final snackBar = SnackBar(
-          duration: const Duration(seconds: 10),
-          content: Container(
-            height: 20.0,
-            child: Center(
-              child: Text(
-                'Current Pin doesnt match! Please try again.',
-                style: const TextStyle(fontSize: 16.0),
-              ),
-            ),
-          ),
-          backgroundColor: Colors.deepPurpleAccent,
-        );
-
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      } else {
-        changePinSnakBar(pin);
-      }
-    } else {
-      changePinSnakBar(pin);
-    }
-  }
 
   void changePin(int parse) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

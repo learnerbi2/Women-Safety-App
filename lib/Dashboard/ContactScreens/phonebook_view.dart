@@ -19,8 +19,8 @@ class PhoneBook extends StatefulWidget {
 }
 
 class _PhoneBookState extends State<PhoneBook> {
-  List<Contact> _contacts;
-  List<Contact> filteredContacts;
+  late List<Contact> _contacts;
+  late List<Contact> filteredContacts;
   List<Contact> _userSelectedContacts = [];
 
   Permission _permission = Permission.contacts;
@@ -31,7 +31,7 @@ class _PhoneBookState extends State<PhoneBook> {
 
     if (_permissionStatus != PermissionStatus.granted) {
       _permissionStatus = await _permission.request();
-      return _permissionStatus ?? PermissionStatus.denied;
+      return _permissionStatus;
     } else {
       return _permissionStatus;
     }
@@ -90,8 +90,8 @@ class _PhoneBookState extends State<PhoneBook> {
     if (_userSelectedContacts.isNotEmpty) {
       for (Contact c in _userSelectedContacts) {
         String entity = "";
-        if (c.phones.isNotEmpty) {
-          String refactoredNumber = refactorPhoneNumbers(c.phones.first.value);
+        if (c.phones!.isNotEmpty) {
+          String refactoredNumber = refactorPhoneNumbers(c.phones!.first.value??"");
           entity = "${c.displayName ?? "User"}***$refactoredNumber";
         } else {
           entity = "${c.displayName ?? "User"}***";
@@ -143,7 +143,7 @@ class _PhoneBookState extends State<PhoneBook> {
           onChanged: (string) {
             setState(() {
               filteredContacts = _contacts
-                  .where((c) => (c.displayName
+                  .where((c) => (c.displayName!
                       .toLowerCase()
                       .contains(string.toLowerCase())))
                   .toList();
@@ -151,6 +151,7 @@ class _PhoneBookState extends State<PhoneBook> {
           },
         ),
       ),
+      // ignore: unnecessary_null_comparison
       body: _contacts != null
           ? Container(
               height: height,
@@ -158,16 +159,16 @@ class _PhoneBookState extends State<PhoneBook> {
               child: ListView.separated(
                 padding: EdgeInsets.symmetric(vertical: height * 0.01),
                 separatorBuilder: (context, index) {
-                  Contact c = filteredContacts?.elementAt(index);
-                  if (c.phones.isEmpty) {
+                  Contact c = filteredContacts.elementAt(index);
+                  if (c.phones!.isEmpty) {
                     return SizedBox();
                   }
                   return Divider(height: height * 0.01);
                 },
-                itemCount: filteredContacts?.length ?? 0,
+                itemCount: filteredContacts.length,
                 itemBuilder: (BuildContext context, int index) {
-                  Contact c = filteredContacts?.elementAt(index);
-                  return ItemsTile(addToContacts, c, c.phones);
+                  Contact? c = filteredContacts.elementAt(index);
+                  return ItemsTile(addToContacts, c, c.phones!);
                 },
               ),
             )
@@ -190,8 +191,8 @@ class _PhoneBookState extends State<PhoneBook> {
           break;
         }
       } else {
-        if (c.phones.isNotEmpty) {
-          if (c.phones.contains(con.phones.first)) {
+        if (c.phones!.isNotEmpty) {
+          if (c.phones!.contains(con.phones?.first)) {
             alreadyInList = true;
             break;
           }
@@ -208,7 +209,7 @@ class _PhoneBookState extends State<PhoneBook> {
   }
 
   String refactorPhoneNumbers(String phone) {
-    if (phone == null || phone == "") {
+    if (phone == "") {
       return "";
     }
     var newPhone = phone.replaceAll(RegExp(r"[^\name\w]"), '');
@@ -273,9 +274,12 @@ class _ItemsTileState extends State<ItemsTile> {
                 },
                 leading: CircleAvatar(
                     backgroundColor: Color(0xffbe3a5a),
-                    child: Text('${widget.c.displayName[0]}'.toUpperCase(),
-                        style: TextStyle(color: Colors.white)),
-                    radius: height * 0.025),
+                    child:Text(
+  (widget.c.displayName != null && widget.c.displayName!.isNotEmpty
+      ? widget.c.displayName![0].toUpperCase()
+      : '?'),
+style: TextStyle(color: Colors.white)),
+radius: height * 0.025),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -290,10 +294,10 @@ class _ItemsTileState extends State<ItemsTile> {
                         children: widget._items.map((
                           i,
                         ) {
-                          if (currentContact == i.value.replaceAll(" ", "")) {
+                          if (currentContact == i.value?.replaceAll(" ", "")) {
                             return Row();
                           }
-                          currentContact = i.value.replaceAll(" ", "");
+                          currentContact = i.value!.replaceAll(" ", "");
                           return Text(
                             i.value ?? i.label ?? "",
                             style: TextStyle(color: Colors.grey[600]),

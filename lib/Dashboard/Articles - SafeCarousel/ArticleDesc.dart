@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:womensafteyhackfair/constants.dart';
-
 class ArticleDesc extends StatelessWidget {
   final int index;
-  const ArticleDesc({Key key, this.index}) : super(key: key);
+  const ArticleDesc({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,33 +67,13 @@ class ArticleDesc extends StatelessWidget {
     );
   }
 }
-
 class ArticleImage extends StatelessWidget {
   final String imageStr;
-  const ArticleImage({Key key, this.imageStr}) : super(key: key);
+
+  const ArticleImage({Key? key, required this.imageStr}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width - 20,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(20),
-            image: DecorationImage(
-                image: NetworkImage(
-                  imageStr,
-                  //"https://www.unwomen.org/-/media/headquarters/images/sections/news/stories/2018/8/tanzania_daressalaam_bettyjaphet-mtewelle_mchikinimarketvendor_august2018_002_1_960x640.jpg?la=en&vs=4847",
-                ),
-                fit: BoxFit.cover),
-          ),
-        ),
-      ),
-    );
+    return Image.network(imageStr);
   }
 }

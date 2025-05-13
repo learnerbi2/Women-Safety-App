@@ -4,11 +4,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:womensafteyhackfair/Dashboard/ContactScreens/phonebook_view.dart';
-import 'package:womensafteyhackfair/background_services.dart';
+// import 'package:womensafteyhackfair/background_services.dart';
 import 'package:workmanager/workmanager.dart';
 
 class SafeHome extends StatefulWidget {
-  const SafeHome({Key key}) : super(key: key);
+  const SafeHome({Key? key}) : super(key: key);
 
   @override
   _SafeHomeState createState() => _SafeHomeState();
@@ -190,65 +190,56 @@ class _SafeHomeState extends State<SafeHome> {
                             "Your location will be shared with one of your contacts every 15 minutes"),
                       ),
                     ),
-                    Expanded(
-                        child: FutureBuilder(
-                            future: getSOSNumbers(),
-                            builder: (context,
-                                AsyncSnapshot<List<String>> snapshot) {
-                              if (snapshot.hasData &&
-                                  snapshot.data.isNotEmpty) {
-                                return ListView.separated(
-                                    itemCount: snapshot.data.length,
-                                    separatorBuilder: (context, index) {
-                                      return Divider(
-                                        indent: 20,
-                                        endIndent: 20,
-                                      );
-                                    },
-                                    itemBuilder: (context, index) {
-                                      String contactData = snapshot.data[index];
-                                      return ListTile(
-                                        onTap: () {
-                                          setModalState(() {
-                                            selectedContact = index;
-                                          });
-                                        },
-                                        leading: CircleAvatar(
-                                          backgroundImage:
-                                              AssetImage("assets/user.png"),
-                                        ),
-                                        title:
-                                            Text(contactData.split("***")[0]),
-                                        subtitle:
-                                            Text(contactData.split("***")[1]),
-                                        trailing: selectedContact == index
-                                            ? Icon(
-                                                Icons.check_circle,
-                                                color: Colors.green,
-                                              )
-                                            : null,
-                                      );
-                                    });
-                              } else {
-                                return ListTile(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PhoneBook(),
-                                      ),
-                                    );
-                                  },
-                                  title: Text("No contact found!"),
-                                  subtitle:
-                                      Text("Please add atleast one Contact"),
-                                  trailing: Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.grey),
-                                );
-                              }
-                            }))
+                 Expanded(
+  child: FutureBuilder<List<String>>(
+    future: getSOSNumbers(),
+    builder: (context, snapshot) {
+      final data = snapshot.data;
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      if (snapshot.hasData && data != null && data.isNotEmpty) {
+        return ListView.separated(
+          itemCount: data.length,
+          separatorBuilder: (context, index) => Divider(indent: 20, endIndent: 20),
+          itemBuilder: (context, index) {
+            String contactData = data[index];
+            return ListTile(
+              onTap: () {
+                setState(() {
+                  selectedContact = index;
+                });
+              },
+              leading: CircleAvatar(
+                backgroundImage: AssetImage("assets/user.png"),
+              ),
+              title: Text(contactData.split("***")[0]),
+              subtitle: Text(contactData.split("***")[1]),
+              trailing: selectedContact == index
+                  ? Icon(Icons.check_circle, color: Colors.green)
+                  : null,
+            );
+          },
+        );
+      } else {
+        return ListTile(
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PhoneBook()),
+            );
+          },
+          title: Text("No contact found!"),
+          subtitle: Text("Please add at least one Contact"),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey),
+        );
+      }
+    },
+  ),
+)
                   ],
                 ),
               );

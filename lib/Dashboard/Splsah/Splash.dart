@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:womensafteyhackfair/Dashboard/Dashboard.dart';
 
 class Splash extends StatefulWidget {
-  const Splash({Key key}) : super(key: key);
+  const Splash({Key? key}) : super(key: key);
 
   @override
   _SplashState createState() => _SplashState();
@@ -51,7 +51,7 @@ class _SplashState extends State<Splash> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 180.0),
                 child: Text(
-                  "AMAAN",
+                  "She-Secure",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

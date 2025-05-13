@@ -6,7 +6,7 @@ import 'package:womensafteyhackfair/Dashboard/Settings/ChangePin.dart';
 import 'package:womensafteyhackfair/background_services.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key key}) : super(key: key);
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -14,6 +14,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool switchValue = false;
+
   Future<int> checkPIN() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int pin = (prefs.getInt('pin') ?? -1111);
@@ -52,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),
             ),
           ),
-          FutureBuilder(
+          FutureBuilder<int>(
               future: checkPIN(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -62,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ChangePinScreen(pin: snapshot.data),
+                              ChangePinScreen(pin: snapshot.data!),
                         ),
                       );
                     },
@@ -136,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Text(
-              "Safe Shake is the key feature for the app. It can be turned on to silently listens for the device shake. When the user feels uncomfortable or finds herself in a situation where sending SOS is the most viable descision. Then She can shake her phone rapidly to send SOS alert to specified contacts without opening the app.",
+              "Safe Shake is the key feature for the app. It can be turned on to silently listen for the device shake. When the user feels uncomfortable or finds herself in a situation where sending SOS is the most viable decision, she can shake her phone rapidly to send an SOS alert.",
               style: TextStyle(color: Colors.grey),
             ),
           ),
@@ -184,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<bool> checkService() async {
-    bool running = await FlutterBackgroundService().isServiceRunning();
+    bool running = await FlutterBackgroundService().isRunning();
     setState(() {
       switchValue = running;
     });
@@ -193,12 +194,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void controllSafeShake(bool val) async {
-    if (val) {
-      FlutterBackgroundService.initialize(onStart);
-    } else {
-      FlutterBackgroundService().sendData(
-        {"action": "stopService"},
-      );
-    }
+  if (val) {
+    await FlutterBackgroundService().configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true
+      ),
+      iosConfiguration: IosConfiguration(
+        onForeground: onStart,
+        onBackground: onIosBackground,
+      ),
+    );
+    FlutterBackgroundService().startService();
+  } else {
+    FlutterBackgroundService().invoke("stopService");
   }
 }
+}
+// void onStart() {
+//   // Add background service initialization logic here
+// }

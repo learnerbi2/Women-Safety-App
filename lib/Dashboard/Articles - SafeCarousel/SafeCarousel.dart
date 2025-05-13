@@ -6,7 +6,7 @@ import 'package:womensafteyhackfair/Dashboard/Articles%20-%20SafeCarousel/SadeWe
 import 'package:womensafteyhackfair/constants.dart';
 
 class SafeCarousel extends StatelessWidget {
-  const SafeCarousel({Key key}) : super(key: key);
+  const SafeCarousel({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class SafeCarousel extends StatelessWidget {
                               SafeWebView(
                                   index: index,
                                   title:
-                                      "Pakistani women inspiring the country",
+                                      "Indian women inspiring the country",
                                   url:
                                       "https://gulfnews.com/world/asia/pakistan/womens-day-10-pakistani-women-inspiring-the-country-1.77696239"));
                         } else if (index == 1) {

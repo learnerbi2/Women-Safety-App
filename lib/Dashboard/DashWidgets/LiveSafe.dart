@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LiveSafe extends StatelessWidget {
-  const LiveSafe({Key key}) : super(key: key);
+  const LiveSafe({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

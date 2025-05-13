@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class AmbulanceEmergency extends StatelessWidget {
-  const AmbulanceEmergency({Key key}) : super(key: key);
+  const AmbulanceEmergency({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,13 @@ class AmbulanceEmergency extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFFD8080),
-                  Color(0xFFFB8580),
-                  Color(0xFFFBD079),
+                  // Color(0xFFFD8080),
+                  // Color(0xFFFB8580),
+                  // Color(0xFFFBD079),
+
+                      Color.fromARGB(255, 17, 168, 234),
+                  Color.fromARGB(255, 106, 189, 222),
+                  Color.fromARGB(255, 123, 73, 208),
                 ],
               ),
             ),

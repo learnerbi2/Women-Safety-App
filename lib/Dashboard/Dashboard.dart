@@ -3,23 +3,26 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart' as appPermissions;
-import 'package:pinput/pin_put/pin_put.dart';
+// import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_maintained/sms.dart' as smsSender;
+import 'package:telephony/telephony.dart' as smsSender;
+// import 'package:sms_maintained/sms.dart' as smsSender;
 import 'package:womensafteyhackfair/Dashboard/ContactScreens/phonebook_view.dart';
 import 'package:womensafteyhackfair/Dashboard/Home.dart';
 import 'package:womensafteyhackfair/Dashboard/ContactScreens/MyContacts.dart';
+import 'package:pinput/pinput.dart';
+
 
 class Dashboard extends StatefulWidget {
   final int pageIndex;
-  const Dashboard({Key key, this.pageIndex = 0}) : super(key: key);
+  const Dashboard({Key? key, this.pageIndex = 0}) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState(currentPage: pageIndex);
 }
 
 class _DashboardState extends State<Dashboard> {
-  _DashboardState({this.currentPage = 0});
+ _DashboardState({this.currentPage = 0});
 
   List<Widget> screens = [Home(), MyContactsScreen()];
   bool alerted = false;
@@ -27,12 +30,6 @@ class _DashboardState extends State<Dashboard> {
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
   bool pinChanged = false;
-  BoxDecoration get _pinPutDecoration {
-    return BoxDecoration(
-      border: Border.all(color: Colors.deepPurpleAccent),
-      borderRadius: BorderRadius.circular(15.0),
-    );
-  }
 
   @override
   void initState() {
@@ -41,7 +38,7 @@ class _DashboardState extends State<Dashboard> {
     checkPermission();
   }
 
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   checkAlertSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
     if (mounted)
@@ -156,36 +153,45 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  void sendSMS(String number, String msgText) {
-    print(number);
-    print(msgText);
-    smsSender.SmsMessage msg = new smsSender.SmsMessage(number, msgText);
-    final smsSender.SmsSender sender = new smsSender.SmsSender();
-    msg.onStateChanged.listen((state) {
-      if (state == smsSender.SmsMessageState.Sending) {
-        return Fluttertoast.showToast(
-          msg: 'Sending Alert...',
-          backgroundColor: Colors.blue,
-        );
-      } else if (state == smsSender.SmsMessageState.Sent) {
-        return Fluttertoast.showToast(
-          msg: 'Alert Sent Successfully!',
-          backgroundColor: Colors.green,
-        );
-      } else if (state == smsSender.SmsMessageState.Fail) {
-        return Fluttertoast.showToast(
-          msg: 'Failure! Check your credits & Network Signals!',
-          backgroundColor: Colors.red,
-        );
-      } else {
-        return Fluttertoast.showToast(
-          msg: 'Failed to send SMS. Try Again!',
-          backgroundColor: Colors.red,
-        );
-      }
-    });
-    sender.sendSms(msg);
+  final smsSender.Telephony telephony = smsSender.Telephony.instance;
+
+void sendSMS(String number, String msgText) async {
+  bool? permissionsGranted = await telephony.requestSmsPermissions;
+
+  if (permissionsGranted ?? false) {
+    telephony.sendSms(
+      to: number,
+      message: msgText,
+      statusListener: (smsSender.SendStatus status) {
+        switch (status) {
+          case smsSender.SendStatus.SENT:
+            Fluttertoast.showToast(
+              msg: 'Alert Sent Successfully!',
+              backgroundColor: Colors.green,
+            );
+            break;
+          case smsSender.SendStatus.DELIVERED:
+            Fluttertoast.showToast(
+              msg: 'SMS Delivered!',
+              backgroundColor: Colors.blue,
+            );
+            break;
+          default:
+            Fluttertoast.showToast(
+              msg: 'Failed to send SMS.',
+              backgroundColor: Colors.red,
+            );
+            break;
+        }
+      },
+    );
+  } else {
+    Fluttertoast.showToast(
+      msg: 'SMS Permission not granted!',
+      backgroundColor: Colors.red,
+    );
   }
+}
 
   sendAlertSMS(bool isAlert) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -197,7 +203,7 @@ class _DashboardState extends State<Dashboard> {
 
     prefs.setBool("alerted", isAlert);
     List<String> numbers = prefs.getStringList("numbers") ?? [];
-    LocationData myLocation;
+    LocationData? myLocation;
     String error;
     Location location = new Location();
     String link = '';
@@ -295,30 +301,30 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Image.asset("assets/pin.png"),
-                Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
-                  child: PinPut(
-                    onSaved: (value) {
-                      print(value);
-                    },
-                    fieldsCount: 4,
-                    onSubmit: (String pin) =>
-                        _showSnackBar(pin, context, userPin),
-                    focusNode: _pinPutFocusNode,
-                    controller: _pinPutController,
-                    submittedFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    selectedFieldDecoration: _pinPutDecoration,
-                    followingFieldDecoration: _pinPutDecoration.copyWith(
-                      borderRadius: BorderRadius.circular(5.0),
-                      border: Border.all(
-                        color: Colors.deepPurpleAccent.withOpacity(.5),
-                      ),
-                    ),
-                  ),
-                ),
+               Container(
+  margin: const EdgeInsets.all(20.0),
+  padding: const EdgeInsets.all(20.0),
+  child: Pinput(
+    length: 4,  // Instead of fieldsCount, use length
+    onChanged: (value) {
+      print(value);  // Use onChanged instead of onSaved
+    },
+    onCompleted: (pin) => _showSnackBar(pin, context, userPin),  // Instead of onSubmit, use onCompleted
+    focusNode: _pinPutFocusNode,
+    controller: _pinPutController,
+    // submittedDecoration: _pinPutDecoration.copyWith(  // Use submittedDecoration instead of submittedFieldDecoration
+    //   borderRadius: BorderRadius.circular(20.0),
+    // ),
+    // selectedDecoration: _pinPutDecoration,  // Use selectedDecoration instead of selectedFieldDecoration
+    // followingDecoration: _pinPutDecoration.copyWith(  // Use followingDecoration instead of followingFieldDecoration
+    //   borderRadius: BorderRadius.circular(5.0),
+    //   border: Border.all(
+    //     color: Colors.deepPurpleAccent.withOpacity(.5),
+    //   ),
+    // ),
+  ),
+),
+
               ],
             ),
           );

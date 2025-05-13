@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:womensafteyhackfair/Dashboard/Settings/AboutCard.dart';
 
 class AboutUs extends StatelessWidget {
-  const AboutUs({Key key}) : super(key: key);
+  const AboutUs({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,25 +48,19 @@ class AboutUs extends StatelessWidget {
           AboutCard(
             asset: "logo",
             desc:
-                """Amaan is a vigilant mobile application that enables the user to stay connected with the ones who care! It gives the user an option to share live location to concerned people through SOS alerts and enables the user to access emergency services. Be a witness of the unfortunate occurring incident and call for help. It is your personal companion.""",
+                """she-Secure is a Security Gaurd or say mobile application that enables the user to stay connected with the ones who care! It gives the user an option to share live location to concerned people through SOS alerts and enables the user to access emergency services. Be a witness of the unfortunate occurring incident and call for help. It is your personal companion.""",
             subtitle: "You Deserve to be safe!",
-            title: "AMAAN",
-            sizeFactor: 1.8,
+            title: "she-Shecure",
+            sizeFactor: 1.8, key: null, 
           ),
-          AboutCard(
-            asset: "gdsc",
-            desc: "",
-            subtitle: "Google Developer Student Club - Comsats University",
-            title: "GDSC - CUI",
-            sizeFactor: 3,
-          ),
+       
           AboutCard(
             asset: "cui",
             desc:
-                """@Kanwal Tanveer, @Fatima, @Mahnoor, @Wadood Jamal, @Shahzaneer, @Zuwanish, @Aftab, @M. Hamza, @Hassam Talha""",
+                """@Aastha Rathore, @Rohit Bamne, @Ajmer Lodhi, @Radhika Singh, @Abhishek Gupta""",
             subtitle: "Made with ❤️ for Her!",
-            title: "Amaan Team",
-            sizeFactor: 2.5,
+            title: "she-Secure Team",
+            sizeFactor: 3.5, key: null,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -99,7 +93,7 @@ class AboutUs extends StatelessWidget {
                   endIndent: 10,
                 ),
               ),
-              Text("© 2021 GDSC CUI, All rights reserved."),
+              Text("© 2024 GDSC CUI, All rights reserved."),
               Expanded(
                 child: Divider(
                   indent: 10,
@@ -124,7 +118,7 @@ class AboutUs extends StatelessWidget {
           "assets/logo.png",
           height: 40,
         ),
-        applicationName: "Amaan - Women Saftey",
+        applicationName: "she-Secure - Women Saftey",
         applicationLegalese:
             "GDSC CUI is providing with a solution to female’s problems, an entirely userfriendly app and a need of the hour, aiming to connect you to the ones who care for you!");
   }

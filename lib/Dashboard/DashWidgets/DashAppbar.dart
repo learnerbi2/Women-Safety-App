@@ -5,7 +5,7 @@ import 'package:womensafteyhackfair/constants.dart';
 class DashAppbar extends StatelessWidget {
   final Function getRandomInt;
   final int quoteIndex;
-  DashAppbar({Key key, this.getRandomInt, this.quoteIndex}) : super(key: key);
+  DashAppbar({Key? key, required this.getRandomInt, required this.quoteIndex}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
